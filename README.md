@@ -20,23 +20,29 @@ This repository houses Dockerfiles for VerneMQ including the build process of Ve
 
 # 1. Quickstart
 
+Use an existing image from `ghcr.io`:
 ```
-docker run --name vmq1 -d ghcr.io/marcbrandner/vernemq:1.12.3-build.1-alpine
+docker run --name vmq1 -p 8888:8888 -p 1883:1883 -d ghcr.io/marcbrandner/vernemq:1.12.3-build.1-alpine
 ```
 
 # 2. Easy Build
 
-Example:
+Clone the repository, i.e. like this:
 ```
 git clone https://github.com/marcbrandner/vernemq-docker.git -b 1.12.3-build.1
-
-cd vernemq-docker
-
-docker build -t vernemq:1.12.3-build.1-alpine -f Dockerfile.alpine .
 ```
 
-The version number (`1.12.3-build.1`) may be replaced with one of the [available tags](https://github.com/marcbrandner/vernemq-docker/releases).
+(The version number (`1.12.3-build.1`) may be replaced with one of the [available tags](https://github.com/marcbrandner/vernemq-docker/releases).)
 
+Build the image based on the `alpine` base image:
+```
+docker build -t vernemq:1.12.3-build.1-alpine vernemq-docker/alpine
+```
+
+Or build the image based on the `debian-slim` base image:
+```
+docker build -t vernemq:1.12.3-build.1-debian-slim vernemq-docker/debian-slim
+```
 
 # 3. Build a Specific Version
 
@@ -46,18 +52,25 @@ Example:
 ```
 git clone https://github.com/marcbrandner/vernemq-docker.git -b main
 
-cd vernemq-docker
-
-docker build -t vernemq:foobar \
+# alpine
+docker build -t vernemq:foobar-alpine \
     --build-arg VMQ_VERSION=1.12.3 \
     --build-arg ERLANG_VERSION=23.3.2.0 \
     --build-arg ALPINE_VERSION=3.13.6 \
-    -f Dockerfile.alpine .
+    vernemq-docker/alpine
+
+# debian-slim
+docker build -t vernemq:foobar-debian-slim \
+    --build-arg VMQ_VERSION=1.12.3 \
+    --build-arg ERLANG_VERSION=23.3.2.0 \
+    --build-arg DEBIAN_SLIM_VERSION=stable-20211011-slim \
+    vernemq-docker/debian-slim
 ```
 * `BUILD_VERSION`: Name of the tag/release of this repository. You can pick whatever fits your demands as this version string will only be used to tag the image.
 * `VMQ_VERSION`: Valid version of the VerneMQ source code to use for the build from the [VerneMQ repo](https://github.com/vernemq/vernemq).
 * `ERLANG_VERSION`: Valid Erlang version used for the build stage compatible with `VMQ_VERSION` (see [Release Notes in VerneMQ repo](https://github.com/vernemq/vernemq/releases).
-* `ALPINE_VERSION`: Valid Alpine base image version used for the run stage (see [VerneMQ Dockerfile](https://github.com/vernemq/docker-vernemq/blob/master/Dockerfile.alpine) or [DockerHub](https://hub.docker.com/_/alpine)).
+* `ALPINE_VERSION`: Valid Alpine base image version used for the run stage (see [VerneMQ `alpine` Dockerfile](https://github.com/vernemq/docker-vernemq/blob/master/Dockerfile.alpine) or [DockerHub](https://hub.docker.com/_/alpine)).
+* `DEBIAN_SLIM_VERSION`: Valid Debian base image version used for the run stage (see [VerneMQ `debian` Dockerfile](https://github.com/vernemq/docker-vernemq/blob/master/Dockerfile) or [DockerHub](https://hub.docker.com/_/debian)).
 
 # 4. Use Image
 
@@ -67,7 +80,11 @@ Images are not regularly built for newlypublished [VerneMQ releases](https://git
 
 Run a VerneMQ container __using an image from `ghcr.io`__:
 ```
+# alpine
 docker run --name vmq1 -p 8888:8888 -p 1883:1883 -d ghcr.io/marcbrandner/vernemq:1.12.3-build.1-alpine
+
+# debian
+docker run --name vmq1 -p 8888:8888 -p 1883:1883 -d ghcr.io/marcbrandner/vernemq:1.12.3-build.1-debian-slim
 ```
 Run a VerneMQ container __using your own image__:
 ```
@@ -91,7 +108,11 @@ docker exec -it vmq1  /bin/sh
 ```
 Run a container __without__ starting a VerneMQ instance and get an interactive shell (i.e for troubleshooting):
 ```
+# alpine
 docker run -it --rm vernemq:1.12.3-build.1-alpine /bin/sh
+
+# debian-slim
+docker run -it --rm vernemq:1.12.3-build.1-debian-slim /bin/sh
 ```
 
 # 5. Troubleshooting
@@ -127,7 +148,7 @@ done
 
 # 6. Roadmap
 
-* Create `Dockerfile.debian` with Debian base image
+* Reduce image size by removing `nano` from all images
 * Automation with GitHub Actions:
     - Automate Docker image build
     - Trigger builds on each new VerneMQ release
@@ -145,8 +166,13 @@ A few things useful for maintenance of this repository:
 export CR_PAT=YOUR_TOKEN
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 ```
-* Tag and push the image:
+* Tag and push the images:
 ```
+# alpine
 docker tag vernemq:1.12.3-build.1-alpine ghcr.io/marcbrandner/vernemq:1.12.3-build.1-alpine
 docker push ghcr.io/marcbrandner/vernemq:1.12.3-build.1-alpine
+
+# debian-slim
+docker tag vernemq:1.12.3-build.1-debian-slim ghcr.io/marcbrandner/vernemq:1.12.3-build.1-debian-slim
+docker push ghcr.io/marcbrandner/vernemq:1.12.3-build.1-debian-slim
 ```
