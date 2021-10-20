@@ -66,7 +66,6 @@ docker build -t vernemq:foobar-debian-slim \
     --build-arg DEBIAN_SLIM_VERSION=stable-20211011-slim \
     vernemq-docker/debian-slim
 ```
-* `BUILD_VERSION`: Name of the tag/release of this repository. You can pick whatever fits your demands as this version string will only be used to tag the image.
 * `VMQ_VERSION`: Valid version of the VerneMQ source code to use for the build from the [VerneMQ repo](https://github.com/vernemq/vernemq).
 * `ERLANG_VERSION`: Valid Erlang version used for the build stage compatible with `VMQ_VERSION` (see [Release Notes in VerneMQ repo](https://github.com/vernemq/vernemq/releases).
 * `ALPINE_VERSION`: Valid Alpine base image version used for the run stage (see [VerneMQ `alpine` Dockerfile](https://github.com/vernemq/docker-vernemq/blob/master/Dockerfile.alpine) or [DockerHub](https://hub.docker.com/_/alpine)).
